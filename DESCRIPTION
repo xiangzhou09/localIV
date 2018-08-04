@@ -7,7 +7,7 @@ Authors@R: person("Xiang", "Zhou", email = "xiang_zhou@fas.harvard.edu",
 Description: This package implements the estimation of the marginal treatment effect (MTE),
   which can serve as a building block for constructing conventional causal parameters such
   as the average treatment effect (ATE) and the average treatment effect on the treated (ATT)
-  (Heckman, Urzua, and Vytlacil 2006 <https://doi.org/10.1162/rest.88.3.389>).
+  (Heckman, Urzua, and Vytlacil 2006 <doi:10.1162/rest.88.3.389>).
   The main function, mte(), estimates the MTE via local instrumental variables (or via a normal
   selection model) and also the projection of MTE onto the 2-dimensional space of the propensity
   score and a latent variable representing unobserved resistance to treatment (Zhou and Xie 2018
