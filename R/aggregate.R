@@ -1,6 +1,6 @@
 #' Estimation of Average Causal Effects from Marginal Treatment Effects
 #'
-#' \code{average} is a function that estimates conventional causal paramters including
+#' \code{average} is a function that estimates conventional causal parameters including
 #' average treatment effect (ATE), average treatment effect on the treated (ATT), and
 #' average treatment effect on the untreated (ATU). Note that the estimation involves
 #' substantial extrapolation when the propensity score has a limited support.
