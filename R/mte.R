@@ -50,7 +50,7 @@
 #'
 #' @examples
 #' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
-#'   method = "normal", data = toydata)
+#'   method = "localIV", data = toydata)
 #' summary(mte_fit$ps_model)
 #'
 #' op <- par(mfrow = c(1, 3))
