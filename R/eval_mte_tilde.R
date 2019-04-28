@@ -10,8 +10,8 @@
 #'
 #' @return A list of two elements.
 #'   \item{mte_tilde}{Estimates of MTE_tilde(p, u)}
-#'   \item{model}{Fitted model of \eqn{X'(\beta_1 - \beta_0)} as a function of the (estimated)
-#'    propensity score}
+#'   \item{model}{Fitted model of \eqn{x'(\beta_1 - \beta_0)} as a function of the
+#'   propensity score}
 #' @export
 #'
 #' @examples
