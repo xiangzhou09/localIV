@@ -1,5 +1,4 @@
 rm(list=ls())
-library(mte)
 
 # extract Y, X, D, and Z
 
