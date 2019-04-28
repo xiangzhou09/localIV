@@ -1,7 +1,7 @@
 #' Estimation of Marginal Treatment Effects (MTE)
 #'
-#' \code{mte} is a function that estimates MTE using either local instrumental
-#' variables (local IV) or a normal selection model (Heckman, Urzua, Vytlacil 2006).
+#' \code{mte} is a function that estimates MTE using either semiparametric local
+#' instrumental variables (local IV) or a normal selection model (Heckman, Urzua, Vytlacil 2006).
 #' The user supplies a formula for the treatment selection model, a formula for the
 #' outcome model, and a data frame containing the variables. The function returns an
 #' object of class \code{mte}. Observations which contain NA (either in \code{selection} or
@@ -13,29 +13,15 @@
 #'   outcomes.
 #' @param data An optional data frame, list, or environment containing the variables
 #'   in the model.
-#' @param method How to estimate the model: either "\code{localIV}" for local instrumental
-#'   variables or "\code{normal}" for a normal selection model.
+#' @param method How to estimate the model: either "\code{localIV}" for semiparametric local IV
+#'   or "\code{normal}" for a normal selection model.
 #' @param bw Bandwidth used for the local polynomial regression in the local IV approach.
 #'   Default is 0.25.
 #'
 #' @return An object of class \code{mte}.
-#'  \item{mte}{Fitted MTE function, taking two arguments, \code{x}
-#'    for a vector of observed covariates and \code{u} for the latent resistance.}
-#'  \item{mte_tilde}{Fitted MTE function, taking two arguments, \code{p} for the propensity
-#'    score and \code{u} for the latent resistance. See Zhou and Xie (Forthcoming) for a definition.}
-#'  \item{mtr}{Fitted marginal treatment response (MTR) function, taking three arguments, \code{x}
-#'    for a vector of observed covariates, \code{u} for the latent resistance, and \code{d} for
-#'    treatment status (1 or 2). Available only when \code{method = "normal"}.
-#'    See Mogstad, Santos, and Torgovitsky (Forthcoming) for a definition.}
-#'  \item{mtr_tilde}{Fitted marginal treatment response (MTR) function, taking three arguments,
-#'    \code{p} for the propensity score, \code{u} for the latent resistance, and \code{d} for
-#'    treatment status (1 or 2). Available only when \code{method = "normal"}.}
 #'  \item{coefs}{A list of fitted coefficients: \code{gamma} for the treatment selection model
 #'     (a probit model), \code{beta1} for the baseline outcome, \code{beta2} for the treated outcome,
 #'     and \code{theta1} and \code{theta2} for the error covariances when \code{method = "normal"}.}
-#'  \item{mte_mat}{An N-by-100 matrix representing estimated MTE for all units, where N
-#'    is the sample size. Each row represents a unit and each column represents a value of the
-#'    normalized latent resistance, which runs from 0.005 to 0.995 with a step size of 0.01.}
 #'  \item{ps}{Estimated propensity scores.}
 #'  \item{ps_model}{The propensity score model, an object of class \code{\link[stats]{glm}}
 #'     if \code{method = "localIV"}, or an object of class \code{\link[sampleSelection]{selection}}
@@ -49,30 +35,14 @@
 #' @export
 #'
 #' @examples
-#' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
-#'   method = "localIV", data = toydata)
+#' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+#'
 #' summary(mte_fit$ps_model)
-#'
-#' op <- par(mfrow = c(1, 3))
-#'
-#' # heterogeneous treatment effects by the propensity score
-#' with(mte_fit, curve(mte_tilde(p = x, u = 0.5), 0, 1))
-#'
-#' # heterogeneous treatment effects by the latent resistance
-#' with(mte_fit, curve(mte_tilde(p = 0.5, u = x), 0, 1))
-#'
-#' # heterogeneous treatment effects among marginal entrants
-#' with(mte_fit, curve(mte_tilde(p = x, u = x), 0, 1))
-#'
-#' par(op)
+#' hist(mte_fit$ps)
 #'
 #' @references Heckman, James J., Sergio Urzua, and Edward Vytlacil. 2006.
 #'   "Understanding Instrumental Variables in Models with Essential Heterogeneity."
 #'   The Review of Economics and Statistics 88:389-432.
-#' @references Zhou, Xiang and Yu Xie. Forthcoming. "Marginal Treatment Effects from
-#'   A Propensity Score Perspective." Journal of Political Economy.
-#' @references Mogstad, Santos, and Torgovitsky. Forthcoming. "Using Instrumental Variables for
-#'   Inference About Policy Relevant Treatment Effects." Econometrica.
 #'
 mte <- function(selection, outcome, data, method = c("localIV", "normal"), bw = 0.25){
 
@@ -119,13 +89,13 @@ mte <- function(selection, outcome, data, method = c("localIV", "normal"), bw = 
   Y <- Y[!badRow]
   N <- length(D)
 
-  environment(mte_normal) <- environment()
+  environment(mte_normal) <- environment(mte_localIV) <- environment()
 
   method <- match.arg(method, c("localIV", "normal"))
   if (method == "normal"){
     out <- mte_normal(selection, outcome, data)
   } else {
-    out <- mte_localIV(Z, D, X, Y, bw = bw)
+    out <- mte_localIV(selection, data, bw = bw)
   }
   out$Z <- Z
   out$D <- D
@@ -135,6 +105,11 @@ mte <- function(selection, outcome, data, method = c("localIV", "normal"), bw = 
   class(out) <- c("mte", "list")
   out
 }
+
+
+
+
+
 
 
 
