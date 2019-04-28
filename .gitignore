@@ -2,3 +2,6 @@
 .Rhistory
 .RData
 .Ruserdata
+data-raw
+cran-comments.md
+localIV.Rproj
