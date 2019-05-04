@@ -34,13 +34,17 @@ is done via the function \code{\link[mgcv]{gam}} with default parameters.
  p <- rep(seq(0.05, 0.95, 0.1), 10)
  u <- rep(seq(0.05, 0.95, 0.1), each = 10)
  out1 <- eval_mte_tilde(mte_fit, p = p, u = u)
- plot_ly(x = u, y = p, z = out1$mte_tilde, type = "heatmap")
+ if(requireNamespace("plotly", quietly = TRUE)){
+   plotly::plot_ly(x = u, y = p, z = out1$mte_tilde, type = "heatmap")
+ }
 
  # heatmap showing MPRTE_tilde(p)
  p <- seq(0.05, 0.95, 0.1)
  u <- p
  out2 <- eval_mte_tilde(mte_fit, p = p, u = u)
- plot_ly(x = u, y = p, z = out2$mte_tilde, type = "heatmap")
+ if(requireNamespace("plotly", quietly = TRUE)){
+   plotly::plot_ly(x = u, y = p, z = out2$mte_tilde, type = "heatmap")
+ }
 
  # decompose MPRTE_tilde(p) into the p-component and the u-component
  y <- with(out2, cbind(mte_tilde, p_comp, u_comp))

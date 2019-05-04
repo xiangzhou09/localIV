@@ -20,7 +20,8 @@ Imports:
     KernSmooth (>= 2.5.0),
     mgcv (>= 1.8-19),
     sampleSelection (>= 1.2-0),
-    stats,
+    stats
+Suggests:
     plotly
 License: GPL (>= 3)
 Encoding: UTF-8
