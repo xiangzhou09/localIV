@@ -1,7 +1,7 @@
 Package: localIV
 Type: Package
 Title: Estimation of Marginal Treatment Effects using Local Instrumental Variables
-Version: 0.2.0
+Version: 0.2.1
 Authors@R: person("Xiang", "Zhou", email = "xiang_zhou@fas.harvard.edu",
   role = c("aut", "cre"))
 Description: In the generalized Roy model, the marginal treatment effect (MTE) can be used as
