@@ -14,7 +14,7 @@ eval_mte_tilde(object, p, u)
 \item{u}{Value(s) of the latent resistance \eqn{u} at which MTE_tilde(p, u) is evaluated.}
 }
 \value{
-A list of two elements.
+A list of four elements.
   \item{mte_tilde}{Estimates of MTE_tilde(p, u)}
   \item{p_comp}{Estimates of \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}}
   \item{u_comp}{Estimates of \eqn{E[\eta|U=u]}}

@@ -10,24 +10,33 @@
 #'   is the sample means.
 #' @param u Value(s) of the latent resistance \eqn{u} at which MTE(x, u) is evaluated.
 #'
-#' @return Estimates of MTE(x, u)
+#' @return A list of three elements.
+#'   \item{mte}{Estimates of MTE(x, u)}
+#'   \item{x_comp}{Estimates of \eqn{\mu_1(x)-\mu_0(x)}}
+#'   \item{u_comp}{Estimates of \eqn{E[\eta|U=u]}}
 #' @export
 #'
 #' @examples
 #' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
 #'   method = "localIV", data = toydata)
 #'
+#' # plot MTE(x, u) as a function of u
 #' u <- seq(0.005, 0.995, 0.01)
-#' mte_u <- eval_mte(mte_fit, u = u)
-#' plot(mte_u ~ u, type = "l", lwd = 2)
+#' out <- eval_mte(mte_fit, u = u)
+#' plot(out$mte ~ u, type = "l", lwd = 2)
 #'
 eval_mte <- function(object, x = colMeans(object$X)[-1], u){
 
   if(!inherits(object, "mte")) stop("object must be an object of class `mte`.")
   if(length(x) != ncol(object$X) - 1) stop("`x` must be of length `ncol(object$X)-1`")
 
-  mte_x <- x %*% (object$coefs$beta2 - object$coefs$beta1)
+  mte_x <- as.numeric(x %*% (object$coefs$beta2 - object$coefs$beta1))
   mte_u <- object$ufun(u)
 
-  as.numeric(mte_x) + mte_u
+  out <- NULL
+  out$mte <- mte_x + mte_u
+  out$x_comp <- mte_x + mean(mte_u)
+  out$u_comp <- mte_u - mean(mte_u)
+
+  out
 }

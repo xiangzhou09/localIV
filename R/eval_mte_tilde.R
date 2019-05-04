@@ -8,7 +8,7 @@
 #' @param p Value(s) of the propensity score \eqn{p} at which MTE_tilde(p, u) is evaluated.
 #' @param u Value(s) of the latent resistance \eqn{u} at which MTE_tilde(p, u) is evaluated.
 #'
-#' @return A list of two elements.
+#' @return A list of four elements.
 #'   \item{mte_tilde}{Estimates of MTE_tilde(p, u)}
 #'   \item{p_comp}{Estimates of \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}}
 #'   \item{u_comp}{Estimates of \eqn{E[\eta|U=u]}}
