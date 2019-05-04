@@ -10,37 +10,52 @@
 #'
 #' @return A list of two elements.
 #'   \item{mte_tilde}{Estimates of MTE_tilde(p, u)}
-#'   \item{model}{Fitted model of \eqn{x'(\beta_1 - \beta_0)} as a function of the
-#'   propensity score}
+#'   \item{p_comp}{Estimates of \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}}
+#'   \item{u_comp}{Estimates of \eqn{E[\eta|U=u]}}
+#'   \item{model}{Fitted model for \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}}
 #' @export
 #'
 #' @examples
-#' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
-#'   method = "localIV", data = toydata)
+#'  mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
+#'  method = "localIV", data = toydata)
 #'
-#' x <- seq(0.05, 0.95, 0.05)
-#' mte_tilde_p <- eval_mte_tilde(mte_fit, p = x, u = 0.5)$mte_tilde
-#' mte_tilde_u <- eval_mte_tilde(mte_fit, p = 0.5, u = x)$mte_tilde
-#' mprte_tilde_p <- eval_mte_tilde(mte_fit, p = x, u = x)$mte_tilde
+#'  # heatmap showing MTE_tilde(p, u)
+#'  library(plotly)
+#'  p <- rep(seq(0.05, 0.95, 0.1), 10)
+#'  u <- rep(seq(0.05, 0.95, 0.1), each = 10)
+#'  out1 <- eval_mte_tilde(mte_fit, p = p, u = u)
+#'  plot_ly(x = u, y = p, z = out1$mte_tilde, type = "heatmap")
 #'
-#' out <- cbind(mte_tilde_p, mte_tilde_u, mprte_tilde_p)
-#' matplot(x = x, y = out, type = "l")
+#'  # heatmap showing MPRTE_tilde(p)
+#'  p <- seq(0.05, 0.95, 0.1)
+#'  u <- p
+#'  out2 <- eval_mte_tilde(mte_fit, p = p, u = u)
+#'  plot_ly(x = u, y = p, z = out2$mte_tilde, type = "heatmap")
+#'
+#'  # decompose MPRTE_tilde(p) into the p-component and the u-component
+#'  y <- with(out2, cbind(mte_tilde, p_comp, u_comp))
+#'  matplot(x = p, y = y, type = "l", lwd = 2)
 #'
 #' @references Zhou, Xiang and Yu Xie. 2019. "Marginal Treatment Effects from
 #'   A Propensity Score Perspective." Journal of Political Economy.
+#'
 eval_mte_tilde <- function(object, p, u){
 
   if(!inherits(object, "mte")) stop("object must be an object of class `mte`.")
-  # if(length(p) != length(u)) stop("`p` and `u` must be of the same length")
 
   X <- object$X[, -1, drop = FALSE]
   mte_X <- as.numeric(X %*% (object$coefs$beta2 - object$coefs$beta1))
   ps <- object$ps
-
   proj <- mgcv::gam(mte_X ~ s(ps))
-  mte_p <- mgcv::predict.gam(proj, newdata = list(ps = p))
 
+  mte_p <- as.numeric(mgcv::predict.gam(proj, newdata = list(ps = p)))
   mte_u <- object$ufun(u)
 
-  list(mte_tilde = as.numeric(mte_p) + mte_u, model = proj)
+  out <- NULL
+  out$mte_tilde <- mte_p + mte_u
+  out$p_comp <- mte_p + mean(mte_u)
+  out$u_comp <- mte_u - mean(mte_u)
+  out$model <- proj
+
+  out
 }

@@ -17,9 +17,9 @@
 #' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x,
 #'   method = "localIV", data = toydata)
 #'
-#' u <- seq(0.05, 0.95, 0.05)
+#' u <- seq(0.005, 0.995, 0.01)
 #' mte_u <- eval_mte(mte_fit, u = u)
-#' plot(mte_u ~ u, type = "b")
+#' plot(mte_u ~ u, type = "l", lwd = 2)
 #'
 eval_mte <- function(object, x = colMeans(object$X)[-1], u){
 

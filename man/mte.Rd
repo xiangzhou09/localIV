@@ -52,6 +52,11 @@ mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25
 summary(mte_fit$ps_model)
 hist(mte_fit$ps)
 
+# plot MTE(x, u) as a function of u
+u <- seq(0.005, 0.995, 0.01)
+mte_u <- eval_mte(mte_fit, u = u)
+plot(mte_u ~ u, type = "l", lwd = 2)
+
 }
 \references{
 Heckman, James J., Sergio Urzua, and Edward Vytlacil. 2006.
