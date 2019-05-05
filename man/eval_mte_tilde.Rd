@@ -30,7 +30,6 @@ is done via the function \code{\link[mgcv]{gam}} with default parameters.
  method = "localIV", data = toydata)
 
  # heatmap showing MTE_tilde(p, u)
- library(plotly)
  p <- rep(seq(0.05, 0.95, 0.1), 10)
  u <- rep(seq(0.05, 0.95, 0.1), each = 10)
  out1 <- eval_mte_tilde(mte_fit, p = p, u = u)
