@@ -12,7 +12,7 @@ Description: In the generalized Roy model, the marginal treatment effect (MTE) c
   The function eval_mte() evaluates MTE at any combination of covariates x and latent resistance u, and the
   function eval_mte_tilde() evaluates MTE projected onto the estimated propensity score (Zhou and Xie 2019
   <https://www.journals.uchicago.edu/doi/abs/10.1086/702172>). The object returned by mte() can be used to
-  estimate conventional parameters such as ATE, ATT, and ATU (via average()) or marginal policy-relevant
+  estimate conventional parameters such as ATE and ATT (via average()) or marginal policy-relevant
   treatment effects (via mprte()).
 Depends:
     R (>= 3.3.0)
