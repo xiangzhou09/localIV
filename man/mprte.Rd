@@ -32,6 +32,8 @@ c(mprte1, mprte2, mprte3)
 
 }
 \references{
-Zhou, Xiang and Yu Xie. 2019. "Marginal Treatment Effects from
-  A Propensity Score Perspective." Journal of Political Economy.
+Zhou, Xiang and Yu Xie. 2019. "\href{https://www.journals.uchicago.edu/doi/abs/10.1086/702172}{Marginal Treatment Effects from A Propensity Score Perspective.}" Journal of Political Economy.
+
+Zhou, Xiang and Yu Xie. 2019. "\href{https://scholar.harvard.edu/files/xzhou/files/zhou-xie2019_hte.pdf}{Heterogeneous Treatment Effects in the Presence of Self-selection:
+  a Propensity Score Perspective.}" Sociological Methodology.
 }
