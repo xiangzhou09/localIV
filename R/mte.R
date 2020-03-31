@@ -1,125 +1,108 @@
-#' Estimation of Marginal Treatment Effects (MTE)
+#' Fitting a Marginal Treatment Effects (MTE) Model.
 #'
-#' \code{mte} is a function that estimates MTE using either semiparametric local
-#' instrumental variables (local IV) or a normal selection model (Heckman, Urzua, Vytlacil 2006).
-#' The user supplies a formula for the treatment selection model, a formula for the
-#' outcome model, and a data frame containing the variables. The function returns an
-#' object of class \code{mte}. Observations which contain NA (either in \code{selection} or
-#' \code{outcome}) are removed.
+#' \code{mte} fits a MTE model using either the semiparametric local instrumental
+#' variables (local IV) method or the normal selection model (Heckman, Urzua, Vytlacil 2006).
+#' The user supplies a formula for the treatment selection equation, a formula for the
+#' outcome equations, and a data frame containing all variables. The function returns an
+#' object of class \code{mte}. Observations that contain NA (either in \code{selection} or
+#' in \code{outcome}) are removed.
 #'
-#' @param selection A formula representing the selection equation.
-#' @param outcome A formula representing the outcome equation where the left hand side
+#' \code{mte_localIV} estimates \eqn{\textup{MTE}(x, u)} using the separametric local IV method,
+#' and \code{mte_normal} estimates \eqn{\textup{MTE}(x, u)} using the normal selection model.
+#'
+#' @param selection A formula representing the treatment selection equation.
+#' @param outcome A formula representing the outcome equations where the left hand side
 #'   is the observed outcome and the right hand side includes predictors of both potential
 #'   outcomes.
-#' @param data An optional data frame, list, or environment containing the variables
+#' @param data A data frame, list, or environment containing the variables
 #'   in the model.
-#' @param method How to estimate the model: either "\code{localIV}" for semiparametric local IV
-#'   or "\code{normal}" for a normal selection model.
+#' @param method How to estimate the model: either "\code{localIV}" for the semiparametric local IV
+#'   method or "\code{normal}" for the normal selection model.
 #' @param bw Bandwidth used for the local polynomial regression in the local IV approach.
 #'   Default is 0.25.
+#' @param mf_s A model frame for the treatment selection equations returned by
+#'   \code{\link[stats]{model.frame}}
+#' @param mf_o A model frame for the outcome equations returned by
+#'   \code{\link[stats]{model.frame}}
 #'
 #' @return An object of class \code{mte}.
-#'  \item{coefs}{A list of fitted coefficients: \code{gamma} for the treatment selection model
-#'     (a probit model), \code{beta1} for the baseline outcome, \code{beta2} for the treated outcome,
+#'  \item{coefs}{A list of coefficient estimates: \code{gamma} for the treatment selection equation,
+#'    \code{beta10} (intercept) and \code{beta1} (slopes) for the baseline outcome
+#'     equation, \code{beta20} (intercept) and \code{beta2} (slopes) for the treated outcome equation,
 #'     and \code{theta1} and \code{theta2} for the error covariances when \code{method = "normal"}.}
+#'  \item{ufun}{A function representing the unobserved component of \eqn{\textup{MTE}(x, u)}.}
 #'  \item{ps}{Estimated propensity scores.}
 #'  \item{ps_model}{The propensity score model, an object of class \code{\link[stats]{glm}}
 #'     if \code{method = "localIV"}, or an object of class \code{\link[sampleSelection]{selection}}
 #'     if \code{method = "normal"}.}
-#'  \item{Z}{The model matrix for the treatment selection equation.}
-#'  \item{D}{The response vector for the treatment selection equation.}
-#'  \item{X}{The model matrix for the outcome equation.}
-#'  \item{Y}{The observed outcome.}
+#'  \item{mf_s}{The model frame for the treatment selection equation.}
+#'  \item{mf_o}{The model frame for the outcome equations.}
+#'  \item{complete_row}{A logical vector indicating whether a row is complete (no missing variables) in the
+#'    original \code{data}}
 #'  \item{call}{The matched call.}
+#' @import rlang
 #' @import stats
 #' @export
 #'
 #' @examples
-#' mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+#' mod <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
 #'
-#' summary(mte_fit$ps_model)
-#' hist(mte_fit$ps)
+#' summary(mod$ps_model)
+#' hist(mod$ps)
 #'
-#' # plot MTE(x, u) as a function of u
-#' u <- seq(0.005, 0.995, 0.01)
-#' out <- eval_mte(mte_fit, u = u)
-#' plot(out$mte ~ u, type = "l", lwd = 2)
+#' mte_vals <- mte_at(u = seq(0.005, 0.995, 0.01), model = mod)
+#' if(require("ggplot2")){
+#'   ggplot(mte_vals, aes(x = u, y = value)) +
+#'   geom_line(size = 1) +
+#'   xlab("Latent Resistance U") +
+#'   ylab("Estimates of MTE at Average values of X") +
+#'   theme_minimal(base_size = 14)
+#' }
 #'
-#' @seealso \code{\link{eval_mte}} for evaluating MTE at any combination of covariates x
-#'   and latent resistance u; \code{\link{eval_mte_tilde}} for evaluating MTE projected onto
-#'   the propensity score; \code{\link{average}} for estimating conventional parameters such as
-#'   ATE and ATT; \code{\link{mprte}} for estimating marginal policy relevant treatment effects
-#'   (MPRTE).
+#' @seealso \code{\link{mte_at}} for evaluating MTE at different values of covariates \eqn{x}
+#'   and latent resistance \eqn{u}; \code{\link{mte_tilde_at}} for evaluating MTE projected onto
+#'   the propensity score; \code{\link{ace}} for estimating average causal effects from
+#'   a fitted \code{mte} object.
 #'
 #' @references Heckman, James J., Sergio Urzua, and Edward Vytlacil. 2006.
 #'   "Understanding Instrumental Variables in Models with Essential Heterogeneity."
 #'   The Review of Economics and Statistics 88:389-432.
 #'
-mte <- function(selection, outcome, data, method = c("localIV", "normal"), bw = 0.25){
-
-  # set data to the parent environment if missing
-  if(missing(data)) data <- parent.frame()
+mte <- function(selection, outcome, data = NULL, method = c("localIV", "normal"), bw = NULL){
 
   # matched call
   cl <- match.call()
 
-  # model frame for treatment selection model
-  m <- match(c("selection", "data"), names(cl), 0)
-  mfS <- cl[c(1L, m)]
-  mfS[[1L]] <- quote(model.frame)
-  names(mfS)[2L] <- "formula"
-  mfS$drop.unused.levels <- TRUE
-  mfS$na.action <- na.pass
-  mfS <- eval(mfS, parent.frame())
-  mtS <- terms(mfS)
-  Z <- model.matrix(mtS, mfS)
-  D <- model.response(mfS)
-  DLevels <- levels(as.factor(D))
-  D <- as.integer(D == utils::tail(DLevels, 1L))
-
-  # model frame for outcome model
-  m <- match(c("outcome", "data"), names(cl), 0)
-  mfO <- cl[c(1L, m)]
-  mfO[[1L]] <- quote(model.frame)
-  names(mfO)[2L] <- "formula"
-  mfO$drop.unused.levels <- TRUE
-  mfO$na.action <- na.pass
-  mfO <- eval(mfO, parent.frame())
-  mtO <- terms(mfO)
-  X <- model.matrix(mtO, mfO)
-  Y <- model.response(mfO)
-
-  # delete rows with missing data
-  badRow <- is.na(D) | is.infinite(D) | is.na(Y) | is.infinite(Y)
-  badRow <- badRow | apply(Z, 1, function(v) any(is.na(v) | is.infinite(v)))
-  badRow <- badRow | apply(X, 1, function(v) any(is.na(v) | is.infinite(v)))
-
-  Z <- Z[!badRow, , drop = FALSE]
-  D <- D[!badRow]
-  X <- X[!badRow, , drop = FALSE]
-  Y <- Y[!badRow]
-  N <- length(D)
-
-  environment(mte_normal) <- environment(mte_localIV) <- environment()
-
-  method <- match.arg(method, c("localIV", "normal"))
-  if (method == "normal"){
-    out <- mte_normal(selection, outcome, data)
-  } else {
-    out <- mte_localIV(selection, data, bw = bw)
+  # check if `selection` and `outcome` are formulas
+  if(!is_formula(selection) || !is_formula(outcome)){
+    stop("Both `selection` and `outcome` have to be formulas.")
   }
-  out$Z <- Z
-  out$D <- D
-  out$X <- X
-  out$Y <- Y
+
+  # set data to the parent environment if missing
+  data <- data %||% caller_env()
+
+  # extract mf_s and mf_o
+  mf_s <- model.frame(selection, data, na.action = NULL,
+                     drop.unused.levels = TRUE)
+  mf_o <- model.frame(outcome, data, na.action = NULL,
+                     drop.unused.levels = TRUE)
+  complete_row <- (rowSums(is.na(mf_s)) + rowSums(is.na(mf_o)) == 0)
+  mf_s <- mf_s[complete_row, , drop = FALSE]
+  mf_o <- mf_o[complete_row, , drop = FALSE]
+
+  # call mte_normal or mte_localIV
+  method <- match.arg(method)
+  if (method == "normal"){
+    out <- mte_normal(mf_s, mf_o)
+  } else {
+    out <- mte_localIV(mf_s, mf_o, bw = bw)
+  }
+
+  # output
+  out$complete_row <- complete_row
   out$cl <- cl
-  class(out) <- c("mte", "list")
   out
 }
-
-
-
-
 
 
 

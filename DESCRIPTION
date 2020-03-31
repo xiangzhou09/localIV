@@ -1,31 +1,32 @@
 Package: localIV
 Type: Package
 Title: Estimation of Marginal Treatment Effects using Local Instrumental Variables
-Version: 0.2.1
+Version: 0.3.0
 Authors@R: person("Xiang", "Zhou", email = "xiang_zhou@fas.harvard.edu",
   role = c("aut", "cre"))
 Description: In the generalized Roy model, the marginal treatment effect (MTE) can be used as
   a building block for constructing conventional causal parameters such as the average treatment
-  effect (ATE) and the average treatment effect on the treated (ATT) (Heckman, Urzua, and Vytlacil 2006
-  <doi:10.1162/rest.88.3.389>). Given a treatment selection model and an outcome model, the function mte()
-  estimates the MTE via a semiparametric local instrumental variables method (or via a normal selection model).
-  The function eval_mte() evaluates MTE at any combination of covariates x and latent resistance u, and the
-  function eval_mte_tilde() evaluates MTE projected onto the estimated propensity score (Zhou and Xie 2019
-  <https://www.journals.uchicago.edu/doi/abs/10.1086/702172>). The object returned by mte() can be used to
-  estimate conventional parameters such as ATE and ATT (via average()) or marginal policy-relevant
-  treatment effects (via mprte()).
+  effect (ATE) and the average treatment effect on the treated (ATT). Given a treatment selection model
+  and an outcome model, the function mte() estimates the MTE via the semiparametric local instrumental variables
+  method or via the normal selection model. The function mte_at() evaluates MTE at different values of the 
+  pretreatment covariates x and the latent resistance u, and the function mte_tilde_at() evaluates MTE
+  projected onto the estimated propensity score. The function ace() can be used estimate population-average
+  causal effects such as the ATE and ATT or the marginal policy relevant treatment effect (MPRTE).
 Depends:
     R (>= 3.3.0)
 Imports:
     KernSmooth (>= 2.5.0),
     mgcv (>= 1.8-19),
+    rlang (>= 0.4.4),
     sampleSelection (>= 1.2-0),
     stats
 Suggests:
-    plotly
+    dplyr,
+    ggplot2,
+    tidyr
 License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.1.0
+RoxygenNote: 7.0.2
 URL: https://github.com/xiangzhou09/localIV
 BugReports: https://github.com/xiangzhou09/localIV
