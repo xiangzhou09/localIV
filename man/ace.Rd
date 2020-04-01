@@ -39,12 +39,12 @@ c(ate, att, atu, mprte1, mprte2, mprte3, mprte4)
 }
 \references{
 Heckman, James J., Sergio Urzua, and Edward Vytlacil. 2006.
-  "Understanding Instrumental Variables in Models with Essential Heterogeneity."
+  "\href{https://www.mitpressjournals.org/doi/abs/10.1162/rest.88.3.389}{Understanding Instrumental Variables in Models with Essential Heterogeneity.}"
   The Review of Economics and Statistics 88:389-432.
 
 Zhou, Xiang and Yu Xie. 2019. "\href{https://www.journals.uchicago.edu/doi/abs/10.1086/702172}{Marginal Treatment Effects from A Propensity Score Perspective.}"
   Journal of Political Economy, 127(6): 3070-3084.
 
-Zhou, Xiang and Yu Xie. 2020. "\href{https://scholar.harvard.edu/files/xzhou/files/zhou-xie2019_hte.pdf}{Heterogeneous Treatment Effects in the Presence of Self-selection:
+Zhou, Xiang and Yu Xie. 2020. "\href{https://journals.sagepub.com/doi/abs/10.1177/0081175019862593}{Heterogeneous Treatment Effects in the Presence of Self-selection:
   a Propensity Score Perspective.}" Sociological Methodology.
 }

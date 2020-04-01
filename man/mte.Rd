@@ -75,7 +75,7 @@ mod <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
 summary(mod$ps_model)
 hist(mod$ps)
 
-mte_vals <- mte_at(u = seq(0.005, 0.995, 0.01), model = mod)
+mte_vals <- mte_at(u = seq(0.05, 0.95, 0.1), model = mod)
 if(require("ggplot2")){
   ggplot(mte_vals, aes(x = u, y = value)) +
   geom_line(size = 1) +
@@ -87,12 +87,11 @@ if(require("ggplot2")){
 }
 \references{
 Heckman, James J., Sergio Urzua, and Edward Vytlacil. 2006.
-  "Understanding Instrumental Variables in Models with Essential Heterogeneity."
+  "\href{https://www.mitpressjournals.org/doi/abs/10.1162/rest.88.3.389}{Understanding Instrumental Variables in Models with Essential Heterogeneity.}"
   The Review of Economics and Statistics 88:389-432.
 }
 \seealso{
-\code{\link{mte_at}} for evaluating MTE at different values of covariates \eqn{x}
-  and latent resistance \eqn{u}; \code{\link{mte_tilde_at}} for evaluating MTE projected onto
-  the propensity score; \code{\link{ace}} for estimating average causal effects from
-  a fitted \code{mte} object.
+\code{\link{mte_at}} for evaluating MTE at different values of the latent resistance \eqn{u};
+  \code{\link{mte_tilde_at}} for evaluating MTE projected onto the propensity score;
+  \code{\link{ace}} for estimating average causal effects from a fitted \code{mte} object.
 }

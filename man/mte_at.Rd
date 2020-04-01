@@ -8,9 +8,8 @@ mte_at(x = NULL, u, model)
 }
 \arguments{
 \item{x}{Values of the pretreatment covariates at which \eqn{\textup{MTE}(x, u)} is evaluated. It
-should be a numeric matrix where the number of columns is one less than the number
-of columns of the design matrix \eqn{X} in the outcome model. Default is a one-row
-matrix where each covariate is set at its sample mean.}
+should be a numeric vector whose length is one less than the number
+of columns of the design matrix \eqn{X} in the outcome model. Default is the sample means.}
 
 \item{u}{A numeric vector. Values of the latent resistance \eqn{u} at which
 \eqn{\textup{MTE}(x, u)} is evaluated. Note that the estimation involves extrapolation
@@ -19,8 +18,7 @@ when the specified u values lie outside of the support of the propensity score.}
 \item{model}{A fitted MTE model returned by \code{\link{mte}}.}
 }
 \value{
-\code{mte_at} returns a data frame. The first \code{length(x)} columns
-  reflect input values of \code{x}.The following columns are
+\code{mte_at} returns a data frame.
   \item{u}{input values of \code{u}.}
   \item{x_comp}{the x-component of the estimated \eqn{\textup{MTE}(x, u)}}
   \item{u_comp}{the u-component of the estimated \eqn{\textup{MTE}(x, u)}}
@@ -28,12 +26,12 @@ when the specified u values lie outside of the support of the propensity score.}
 }
 \description{
 \code{mte_at} evaluates marginal treatment effects at different
-values of the covariates \code{x} and the latent resistance \code{u}.
+values of the latent resistance \code{u} with a given \eqn{X=x}.
 }
 \examples{
 mod <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata)
 
-mte_vals <- mte_at(u = seq(0.005, 0.995, 0.01), model = mod)
+mte_vals <- mte_at(u = seq(0.05, 0.95, 0.1), model = mod)
 if(require("ggplot2")){
   ggplot(mte_vals, aes(x = u, y = value)) +
   geom_line(size = 1) +
