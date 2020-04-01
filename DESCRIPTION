@@ -9,9 +9,9 @@ Description: In the generalized Roy model, the marginal treatment effect (MTE) c
   effect (ATE) and the average treatment effect on the treated (ATT). Given a treatment selection model
   and an outcome model, the function mte() estimates the MTE via the semiparametric local instrumental variables
   method or via the normal selection model. The function mte_at() evaluates MTE at different values of the 
-  pretreatment covariates x and the latent resistance u, and the function mte_tilde_at() evaluates MTE
+  covariates x and the latent resistance u, and the function mte_tilde_at() evaluates MTE
   projected onto the estimated propensity score. The function ace() can be used estimate population-average
-  causal effects such as the ATE and ATT or the marginal policy relevant treatment effect (MPRTE).
+  causal effects such as the ATE and ATT or the marginal policy relevant treatment effect.
 Depends:
     R (>= 3.3.0)
 Imports:

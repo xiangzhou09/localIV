@@ -1,0 +1,512 @@
+YS <- D
+estimation <- sampleSelection::tobit5fit(YS, XS, YO1, XO1, YO2, XO2, start=start)
+dim(YS)
+dim(XS)
+names(XS)
+colnames(XS)
+dim(XO1)
+dim(XO2)
+start <- coef(twoStep, part="full")[c(ind$betaS, ind$betaO1, ind$sigma1,
+ind$rho1, ind$betaO2, ind$sigma2, ind$rho2)]
+names(start) <- sub( "^[SO][12]?:", "", names(start))
+estimation <- sampleSelection::tobit5fit(YS, XS, YO1, XO1, YO2, XO2, start=start)
+estimation <- sampleSelection::tobit5fit(D, Z, YO1, XO1, YO2, XO2, start=start)
+estimation
+rm(list = ls())
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/xiang.R', echo=TRUE)
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/prep_tobit5fit.R', echo=TRUE)
+# check if `selection` and `outcome` are formulas
+if(!is_formula(selection) || !is_formula(outcome)){
+stop("Both `selection` and `outcome` have to be formulas.")
+}
+# set data to the parent environment if missing
+data <- data %||% parent.frame()
+# extract Z and D
+mfS <- stats::model.frame(selection, data, na.action = NULL,
+drop.unused.levels = TRUE)
+Z <- stats::model.matrix(selection, mfS)
+D <- stats::model.response(mfS)
+D_levels <- levels(as.factor(D))
+if(length(D_levels)!=2) stop("`D` must be binary.")
+D <- as_integer(D==D_levels[[2]])
+# model frame for outcome model
+mfO <- stats::model.frame(outcome, data, na.action = NULL,
+drop.unused.levels = TRUE)
+X <- stats::model.matrix(outcome, mfO)
+Y <- stats::model.response(mfO)
+# delete observations with missing data
+goodrow <- is.finite(D) & is.finite(Y)
+goodrow <- goodrow & apply(Z, 1, pryr::compose(all, is.finite))
+goodrow <- goodrow & apply(X, 1, pryr::compose(all, is.finite))
+Z <- Z[goodrow, , drop = FALSE]
+D <- D[goodrow]
+X <- X[goodrow, , drop = FALSE]
+Y <- Y[goodrow]
+N <- length(D)
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/prep_tobit5fit.R', echo=TRUE)
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/prep_tobit5fit.R', echo=TRUE)
+estimation
+class(pZ+2*pX+4)
+class(estimation)
+estimation$estimate
+class(estimation$estimate)
+length(estimation$estimate)
+nParam
+coef(twoStep, part="full")[c(ind$betaS, ind$betaO1, ind$sigma1,
+ind$rho1, ind$betaO2, ind$sigma2, ind$rho2)]
+?`sampleSelection::heckit5fit
+``
+?sampleSelection::heckit5fit
+YO1 <- YO2 <- Y
+XO1 <- XO2 <- X
+YO1[D == 1] <- NA
+YO2[D == 0] <- NA
+XO1[D == 1, ] <- NA
+XO2[D == 0, ] <- NA
+pZ <- ncol(Z)
+pX <- ncol(X)
+twoStep <- sampleSelection::heckit5fit(selection, outcome, outcome, data=data)
+ind <- twoStep$param$index
+start <- coef(twoStep, part="full")[c(ind$betaS, ind$betaO1, ind$sigma1,
+ind$rho1, ind$betaO2, ind$sigma2, ind$rho2)]
+names(start) <- sub( "^[SO][12]?:", "", names(start))
+normal_switch <- sampleSelection::tobit5fit(D, Z, YO1, XO1, YO2, XO2, start=start)
+# propensity score from the normal selection model
+gamma <- normal_switch$estimate[1:pZ]
+gamma
+pZ
+colnames(Z)
+ps <- as.double(pnorm(Z %*% matrix(gamma)))
+# parametric MTE estimation
+beta1 <- normal_switch$estimate[(pZ + 1):(pZ + pX)]
+beta2 <- normal_switch$estimate[(pZ + pX + 3):(pZ + 2 * pX + 2)]
+sigma1 <- normal_switch$estimate["sigma1"]
+rho1 <- normal_switch$estimate["rho1"]
+theta1 <- - sigma1 * rho1
+sigma2 <- normal_switch$estimate["sigma2"]
+rho2 <- normal_switch$estimate["rho2"]
+theta2 <- - sigma2 * rho2
+# all coefficients
+coefs <- list(gamma = gamma, beta1 = beta1[-1], beta2 = beta2[-1],
+theta1 = theta1, theta2 = theta2)
+coefs
+theta2 <- c(theta2 = - sigma2 * rho2)
+theta1 <- c(theta1 = - sigma1 * rho1)
+# all coefficients
+coefs <- list(gamma = gamma, beta1 = beta1[-1], beta2 = beta2[-1],
+theta1 = theta1, theta2 = theta2)
+coefs
+?c
+theta1 <- c(- sigma1 * rho1, use.names = FALSE)
+theta1
+theta2 <- c(- sigma2 * rho2, use.names = FALSE)
+# all coefficients
+coefs <- list(gamma = gamma, beta1 = beta1[-1], beta2 = beta2[-1],
+theta1 = theta1, theta2 = theta2)
+coefs
+ufun <- function(u) beta2[1] - beta1[1] + (theta2 - theta1) * qnorm(u)
+fn_env(ufun)
+rlang::fn_env(ufun)
+?fn_env
+rlang::env(beta1, beta2, theta1, theta2)
+ufun_env <- rlang::env(beta1 = beta1, beta2 = beta2,
+theta1 = theta1, theta2 = theta2)
+View(ufun_env)
+fn_env(ufun) <- env(beta1 = beta1, beta2 = beta2,
+theta1 = theta1, theta2 = theta2)
+library(ufun)
+library(rlang)
+fn_env(ufun) <- env(beta1 = beta1, beta2 = beta2,
+theta1 = theta1, theta2 = theta2)
+# output
+out <- list(coefs = coefs, ufun = ufun, ps = ps, ps_model = normal_switch)
+out
+out$ps_model$method
+?glm.fit
+# X without constant term and us
+X <- X[, -1, drop = FALSE]
+colnames(X)
+us <- seq(0.005, 0.995, 0.01)
+# propensity score model
+ps_logit <- glm.fit(x = Z, y = D, family = binomial("probit"))
+ps_logit$fitted.values
+ps <- ps_logit$fitted.values
+# step 1: fit Y, X, Xp on p using local linear regressions
+Xp <- X * matrix(rep(ps, ncol(X)), N, ncol(X))
+Y_res <- stats::loess(Y ~ ps, degree = 1)$res
+X_res <- apply(X, 2, function(x) loess(x ~ ps, degree = 1)$res)
+Xp_res <- apply(Xp, 2, function(x) loess(x ~ ps, degree = 1)$res)
+# step 2: double residual regression
+res_reg <- lm.fit(x = cbind(X_res, Xp_res), y = Y_res)
+beta1 <- res_reg$coef[1:ncol(X)]
+# step 1: fit Y, X, Xp on p using local linear regressions
+Xp <- X * matrix(rep(ps, pX), N, pX)
+# local IV estimation of MTE #
+pX <- ncol(X)
+# step 1: fit Y, X, Xp on p using local linear regressions
+Xp <- X * matrix(rep(ps, pX), N, pX)
+Y_res <- stats::loess(Y ~ ps, degree = 1)$res
+X_res <- apply(X, 2, function(x) loess(x ~ ps, degree = 1)$res)
+Xp_res <- apply(Xp, 2, function(x) loess(x ~ ps, degree = 1)$res)
+# step 2: double residual regression
+res_reg <- lm.fit(x = cbind(X_res, Xp_res), y = Y_res)
+beta1 <- res_reg$coef[1:pX]
+beta2 <- res_reg$coef[(pX + 1):(2 * pX)] + beta1
+# step 3: fit delta and K(p)
+Y_unobserved <- Y - as.double(cbind(X, Xp) %*% res_reg$coef)
+mte_u_poly <- KernSmooth::locpoly(ps, Y_unobserved, drv = 1L, bandwidth = bw,
+gridsize = 100L, range.x = c(0.005, 0.995))
+bw
+bw <- 0.25
+mte_u_poly <- KernSmooth::locpoly(ps, Y_unobserved, drv = 1L, bandwidth = bw,
+gridsize = 100L, range.x = c(0.005, 0.995))
+# mte_u <- mte_u_poly$y
+ufun <- approxfun(mte_u_poly)
+# all coefficients
+coefs <- list(gamma = ps_logit$coefficients,
+beta1 = beta1, beta2 = beta2,
+theta1 = NULL, theta2 = NULL)
+fn_env(ufun) <- env()
+parent.env(fn_env(ufun))
+# mte_u <- mte_u_poly$y
+ufun <- approxfun(mte_u_poly)
+fn_env(ufun) <- env()
+# all coefficients
+coefs <- list(gamma = ps_logit$coefficients,
+beta1 = beta1, beta2 = beta2,
+theta1 = NULL, theta2 = NULL)
+?mte
+document()
+library(devtools)
+document()
+?mte
+mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+?env
+document()
+?mte
+mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+rm(list = ls())
+mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+document()
+mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+mte_fit$ufun
+env_parent(env(mte_fit$ufun()))
+env_parent(env(mte_fit$ufun)
+)
+env_parent(fn_env(mte_fit$ufun))
+a <- env_parent(fn_env(mte_fit$ufun))
+View(a)
+?env
+new_environment(a = 2, b = 3)
+?list2env
+bw <- NULL
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/xiang.R', echo=TRUE)
+# matched call
+cl <- match.call()
+# check if `selection` and `outcome` are formulas
+if(!is_formula(selection) || !is_formula(outcome)){
+stop("Both `selection` and `outcome` have to be formulas.")
+}
+# set data to the parent environment if missing
+data <- data %||% parent.frame()
+# extract Z and D
+mfS <- stats::model.frame(selection, data, na.action = NULL,
+drop.unused.levels = TRUE)
+Z <- stats::model.matrix(selection, mfS)
+D <- stats::model.response(mfS)
+D_levels <- levels(as.factor(D))
+if(length(D_levels)!=2) stop("`D` must be binary.")
+D <- as_integer(D==D_levels[[2]])
+# model frame for outcome model
+mfO <- stats::model.frame(outcome, data, na.action = NULL,
+drop.unused.levels = TRUE)
+X <- stats::model.matrix(outcome, mfO)
+Y <- stats::model.response(mfO)
+# delete observations with missing data
+goodrow <- is.finite(D) & is.finite(Y)
+goodrow <- goodrow & apply(Z, 1, pryr::compose(all, is.finite))
+goodrow <- goodrow & apply(X, 1, pryr::compose(all, is.finite))
+data <- data[goodrow, , drop = FALSE]
+Z <- Z[goodrow, , drop = FALSE]
+D <- D[goodrow]
+X <- X[goodrow, , drop = FALSE]
+Y <- Y[goodrow]
+N <- length(D)
+environment(mte_normal) <- environment()
+bw <- 0.25
+N <- length(D)
+# X without constant term and us
+X <- X[, -1, drop = FALSE]
+us <- seq(0.005, 0.995, 0.01)
+# propensity score model
+ps_logit <- glm.fit(x = Z, y = D, family = binomial("probit"))
+ps <- ps_logit$fitted.values
+# local IV estimation of MTE #
+pX <- ncol(X)
+# step 1: fit Y, X, Xp on p using local linear regressions
+Xp <- X * matrix(rep(ps, pX), N, pX)
+Y_res <- stats::loess(Y ~ ps, degree = 1)$res
+X_res <- apply(X, 2, function(x) loess(x ~ ps, degree = 1)$res)
+Xp_res <- apply(Xp, 2, function(x) loess(x ~ ps, degree = 1)$res)
+# step 2: double residual regression
+res_reg <- lm.fit(x = cbind(X_res, Xp_res), y = Y_res)
+beta1 <- res_reg$coef[1:pX]
+beta2 <- res_reg$coef[(pX + 1):(2 * pX)] + beta1
+# step 3: fit delta and K(p)
+Y_unobserved <- Y - as.double(cbind(X, Xp) %*% res_reg$coef)
+mte_u_poly <- KernSmooth::locpoly(ps, Y_unobserved, drv = 1L, bandwidth = bw,
+gridsize = 100L, range.x = c(0.005, 0.995))
+# mte_u <- mte_u_poly$y
+ufun <- approxfun(mte_u_poly)
+fn_env(ufun) <- env()
+fn_env(ufun) <- new_environment()
+# check if `selection` and `outcome` are formulas
+if(!is_formula(selection) || !is_formula(outcome)){
+stop("Both `selection` and `outcome` have to be formulas.")
+}
+# set data to the parent environment if missing
+data <- data %||% parent.frame()
+# extract Z and D
+mfS <- stats::model.frame(selection, data, na.action = NULL,
+drop.unused.levels = TRUE)
+Z <- stats::model.matrix(selection, mfS)
+D <- stats::model.response(mfS)
+D_levels <- levels(as.factor(D))
+if(length(D_levels)!=2) stop("`D` must be binary.")
+D <- as_integer(D==D_levels[[2]])
+# model frame for outcome model
+mfO <- stats::model.frame(outcome, data, na.action = NULL,
+drop.unused.levels = TRUE)
+X <- stats::model.matrix(outcome, mfO)
+Y <- stats::model.response(mfO)
+# delete observations with missing data
+goodrow <- is.finite(D) & is.finite(Y)
+goodrow <- goodrow & apply(Z, 1, pryr::compose(all, is.finite))
+goodrow <- goodrow & apply(X, 1, pryr::compose(all, is.finite))
+data <- data[goodrow, , drop = FALSE]
+Z <- Z[goodrow, , drop = FALSE]
+D <- D[goodrow]
+X <- X[goodrow, , drop = FALSE]
+Y <- Y[goodrow]
+N <- length(D)
+environment(mte_normal) <- environment()
+method <- match.arg(method, c("localIV", "normal"))
+YO1 <- YO2 <- Y
+XO1 <- XO2 <- X
+YO1[D == 1] <- NA
+YO2[D == 0] <- NA
+XO1[D == 1, ] <- NA
+XO2[D == 0, ] <- NA
+pZ <- ncol(Z)
+pX <- ncol(X)
+twoStep <- sampleSelection::heckit5fit(selection, outcome, outcome, data=data)
+ind <- twoStep$param$index
+start <- coef(twoStep, part="full")[c(ind$betaS, ind$betaO1, ind$sigma1,
+ind$rho1, ind$betaO2, ind$sigma2, ind$rho2)]
+names(start) <- sub( "^[SO][12]?:", "", names(start))
+normal_switch <- sampleSelection::tobit5fit(D, Z, YO1, XO1, YO2, XO2, start=start)
+# propensity score from the normal selection model
+gamma <- normal_switch$estimate[1:pZ]
+ps <- as.double(pnorm(Z %*% matrix(gamma)))
+# parametric MTE estimation
+beta1 <- normal_switch$estimate[(pZ + 1):(pZ + pX)]
+beta2 <- normal_switch$estimate[(pZ + pX + 3):(pZ + 2 * pX + 2)]
+sigma1 <- normal_switch$estimate["sigma1"]
+rho1 <- normal_switch$estimate["rho1"]
+theta1 <- c(- sigma1 * rho1, use.names = FALSE)
+sigma2 <- normal_switch$estimate["sigma2"]
+rho2 <- normal_switch$estimate["rho2"]
+theta2 <- c(- sigma2 * rho2, use.names = FALSE)
+# all coefficients
+coefs <- list(gamma = gamma,
+beta10 = beta1[1],
+beta1 = beta1[-1],
+beta20 = beta2[1],
+beta2 = beta2[-1],
+theta1 = theta1,
+theta2 = theta2)
+ufun <- function(u) beta20 - beta10 + (theta2 - theta1) * qnorm(u)
+fn_env(ufun) <- new_environment(coefs)
+fn_env(ufun)
+View(fn_env(ufun))
+env_parent(fn_env(ufun))
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/xiang.R', echo=TRUE)
+mte_fit <- mte(selection, outcome, data)
+mte_fit
+summary(mte_fit)
+summary(mte_fit$coefs)
+summary(mte_fit$ps_model)
+mte_fit$ps_model
+mte_fit$ps_model$coefficients
+?glm
+# propensity score model
+ps_logit <- glm.fit(x = Z, y = D, family = binomial("probit"))
+?lm
+?lm.fit
+?lm
+# matched call
+cl <- match.call()
+# check if `selection` and `outcome` are formulas
+if(!is_formula(selection) || !is_formula(outcome)){
+stop("Both `selection` and `outcome` have to be formulas.")
+}
+# set data to the parent environment if missing
+data <- data %||% parent.frame()
+# extract Z and D
+mfS <- stats::model.frame(selection, data, na.action = NULL,
+drop.unused.levels = TRUE)
+Z <- stats::model.matrix(selection, mfS)
+D <- stats::model.response(mfS)
+D_levels <- levels(as.factor(D))
+if(length(D_levels)!=2) stop("`D` must be binary.")
+D <- as_integer(D==D_levels[[2]])
+# model frame for outcome model
+mfO <- stats::model.frame(outcome, data, na.action = NULL,
+drop.unused.levels = TRUE)
+X <- stats::model.matrix(outcome, mfO)
+Y <- stats::model.response(mfO)
+# delete observations with missing data
+goodrow <- is.finite(D) & is.finite(Y)
+goodrow <- goodrow & apply(Z, 1, pryr::compose(all, is.finite))
+goodrow <- goodrow & apply(X, 1, pryr::compose(all, is.finite))
+data <- data[goodrow, , drop = FALSE]
+Z <- Z[goodrow, , drop = FALSE]
+D <- D[goodrow]
+X <- X[goodrow, , drop = FALSE]
+Y <- Y[goodrow]
+N <- length(D)
+environment(mte_normal) <- environment()
+method <- match.arg(method, c("localIV", "normal"))
+N <- length(D)
+# X without constant term and us
+X <- X[, -1, drop = FALSE]
+us <- seq(0.005, 0.995, 0.01)
+# propensity score model
+ps_logit <- glm.fit(x = Z, y = D, family = binomial("probit"))
+glm(x = Z, y = D, family = binomial())
+summary(mfS)
+attributes(mfS)
+formula(mfS)
+class(mfS)
+class(mfO)
+names(attributes(mfS))
+?formula
+model.frame(y ~ x, data = tibble(y = 1, x = "a"))
+model.frame(y ~ x, data = tibble::tibble(y = 1, x = "a"))
+a <- model.frame(y ~ x, data = tibble::tibble(y = 1, x = "a"))
+a
+typeof(a$x)
+is.finite(a$x)
+a <- model.frame(y ~ x, data = tibble::tibble(y = 1, x = "a"), drop.unused.levels = TRUE)
+typeof(a$x)
+z <- model.matrix(y ~ x, a)
+is.na(mfS) %>% dim()
+dim(is.na(mfS))
+?rowSums
+rowSums(is.na(mfS))
+rowSums(is.na(mfS))>0
+T + F
+F + F
+rowSums(is.na(mfS))
+rowSums(is.na(mfS)) | rowSums(is.na(mfO))
+?model.matrix
+formula(mfO)
+formula(mfS)
+good_row <- (rowSums(is.na(mfS)) + rowSums(is.na(mfO)) == 0)
+sum(good_row)
+# extract Z, D, X and Y
+N <- nrow(mfS)
+Z <- stats::model.matrix(formula(mfS), mfS)
+D <- stats::model.response(mfS)
+D_levels <- levels(as.factor(D))
+if(length(D_levels)!=2) stop("`D` must be binary.")
+D <- as_integer(D==D_levels[[2]])
+X <- stats::model.matrix(formula(mfO), mfO)
+Y <- stats::model.response(mfO)
+YO1 <- YO2 <- Y
+XO1 <- XO2 <- X
+YO1[D == 1] <- NA
+YO2[D == 0] <- NA
+XO1[D == 1, ] <- NA
+XO2[D == 0, ] <- NA
+pZ <- ncol(Z)
+pX <- ncol(X)
+View(mfS)
+str(mfS)
+?sampleSelection::heckit5fit
+names(mfS)
+setdiff(names(mfO), names(mfS))
+setdiff(names(mfS), names(mfO))
+formula(mfO)
+names(mfO)
+formula(mfS)
+names(mfS)
+names(attributes(mfS))
+terms(mfS)
+setdiff(names(mfS), names(mfO))
+names(mfO)
+names(mfS)
+setdiff(names(mfS), names(mfO))
+?cbind
+nameSonly <- setdiff(names(mfS), names(mfO))
+data2 <- cbind(mfS[nameSonly], mfO)
+names(data2)
+twoStep <- sampleSelection::heckit5fit(selection, outcome, outcome, data=data2)
+ind <- twoStep$param$index
+start <- coef(twoStep, part="full")[c(ind$betaS, ind$betaO1, ind$sigma1,
+ind$rho1, ind$betaO2, ind$sigma2, ind$rho2)]
+names(start) <- sub( "^[SO][12]?:", "", names(start))
+normal_switch <- sampleSelection::tobit5fit(D, Z, YO1, XO1, YO2, XO2, start=start)
+# propensity score from the normal selection model
+gamma <- normal_switch$estimate[1:pZ]
+ps <- as.double(pnorm(Z %*% matrix(gamma)))
+# parametric MTE estimation
+beta1 <- normal_switch$estimate[(pZ + 1):(pZ + pX)]
+beta2 <- normal_switch$estimate[(pZ + pX + 3):(pZ + 2 * pX + 2)]
+sigma1 <- normal_switch$estimate["sigma1"]
+rho1 <- normal_switch$estimate["rho1"]
+theta1 <- c(- sigma1 * rho1, use.names = FALSE)
+sigma2 <- normal_switch$estimate["sigma2"]
+rho2 <- normal_switch$estimate["rho2"]
+theta2 <- c(- sigma2 * rho2, use.names = FALSE)
+# all coefficients
+coefs <- list(gamma = gamma,
+beta10 = beta1[1],
+beta1 = beta1[-1],
+beta20 = beta2[1],
+beta2 = beta2[-1],
+theta1 = theta1,
+theta2 = theta2)
+# u component of mte(x, u)
+ufun <- function(u) beta20 - beta10 + (theta2 - theta1) * qnorm(u)
+fn_env(ufun) <- new_environment(coefs)
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/xiang.R', echo=TRUE)
+document()
+source('C:/Users/Xiang Zhou/Dropbox/R Packages/localIV/data-raw/xiang.R', echo=TRUE)
+mte_fit
+View(mte_fit)
+mte_fit$coefs
+mte_fit2 <- mte(selection, outcome, data, method = "normal")
+View(mte_fit2)
+?mte
+mte_fit <- mte(selection = d ~ x + z, outcome = y ~ x, data = toydata, bw = 0.25)
+summary(mte_fit$ps_model)
+hist(mte_fit$ps)
+# plot MTE(x, u) as a function of u
+u <- seq(0.005, 0.995, 0.01)
+out <- eval_mte(mte_fit, u = u)
+plot(out$mte ~ u, type = "l", lwd = 2)
+object.size(mte_fit)
+document()
+llibrary(devtools)
+library(devtools)
+document()
+build_manual()
+build_manual()
+document()
+build_manual()
+build_m
+build_manual()
+build_manual()
+document()
+build_manual()
