@@ -66,7 +66,7 @@ object of class \code{mte}. Observations that contain NA (either in \code{select
 in \code{outcome}) are removed.
 }
 \details{
-\code{mte_localIV} estimates \eqn{\textup{MTE}(x, u)} using the separametric local IV method,
+\code{mte_localIV} estimates \eqn{\textup{MTE}(x, u)} using the semiparametric local IV method,
 and \code{mte_normal} estimates \eqn{\textup{MTE}(x, u)} using the normal selection model.
 }
 \examples{

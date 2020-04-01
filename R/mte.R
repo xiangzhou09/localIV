@@ -7,7 +7,7 @@
 #' object of class \code{mte}. Observations that contain NA (either in \code{selection} or
 #' in \code{outcome}) are removed.
 #'
-#' \code{mte_localIV} estimates \eqn{\textup{MTE}(x, u)} using the separametric local IV method,
+#' \code{mte_localIV} estimates \eqn{\textup{MTE}(x, u)} using the semiparametric local IV method,
 #' and \code{mte_normal} estimates \eqn{\textup{MTE}(x, u)} using the normal selection model.
 #'
 #' @param selection A formula representing the treatment selection equation.
