@@ -44,7 +44,7 @@ mte_tilde <- mte_tilde_at(p, u, model = mod)
 if(require("ggplot2")){
 ggplot(mte_tilde$df, aes(x = u, y = p, fill = value)) +
   geom_tile() +
-  scale_fill_gradient(name = "MTE", low = "yellow", high = "blue") +
+  scale_fill_gradient(name = expression(widetilde(MTE)(p, u)), low = "yellow", high = "blue") +
   xlab("Latent Resistance U") +
   ylab("Propensity Score p(Z)") +
   theme_minimal(base_size = 14)
@@ -56,13 +56,13 @@ mprte_tilde_df <- subset(mte_tilde$df, p == u)
 if(require("ggplot2")){
 ggplot(mprte_tilde_df, aes(x = u, y = p, fill = value)) +
   geom_tile() +
-  scale_fill_gradient(name = "MTE", low = "yellow", high = "blue") +
+  scale_fill_gradient(name = expression(widetilde(MPRTE)(p)), low = "yellow", high = "blue") +
   xlab("Latent Resistance U") +
   ylab("Propensity Score p(Z)") +
   theme_minimal(base_size = 14)
 }
 
-# decompose MPRTE_tilde(p) into the p-component and the u-component
+# MPRTE_tilde(p) decomposed into the p-component and the u-component
 if(require(tidyr) && require(dplyr) && require(ggplot2)){
 mprte_tilde_df \%>\%
   pivot_longer(cols = c(u_comp, p_comp, value)) \%>\%
@@ -71,9 +71,8 @@ mprte_tilde_df \%>\%
          `p_comp` = "p(Z) component",
          `u_comp` = "U component")) \%>\%
   ggplot(aes(x = p, y = value)) +
-  geom_line(aes(linetype = name, col = name), size = 1) +
+  geom_line(aes(linetype = name), size = 1) +
   scale_linetype(name = "") +
-  scale_color_discrete(name = "") +
   xlab("Propensity Score p(Z)") +
   ylab("Treatment Effect") +
   theme_minimal(base_size = 14) +

@@ -36,7 +36,7 @@ if(require("ggplot2")){
   ggplot(mte_vals, aes(x = u, y = value)) +
   geom_line(size = 1) +
   xlab("Latent Resistance U") +
-  ylab("Estimates of MTE at Average values of X") +
+  ylab("Estimates of MTE at Mean Values of X") +
   theme_minimal(base_size = 14)
 }
 
