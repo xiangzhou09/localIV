@@ -96,8 +96,8 @@ mte_tilde_at <- function(p, u, model, ...){
 
   # estimates of MTE_tilde given each combination of p and u
   df <- expand.grid(p = p, u = u)
-  df$p_comp <- rep(p_comp, each = length(u))
-  df$u_comp <- rep(u_comp, length(p))
+  df$p_comp <- rep(p_comp, length(u))
+  df$u_comp <- rep(u_comp, each = length(p))
   df$value <- df$p_comp + df$u_comp
 
   out <- NULL
