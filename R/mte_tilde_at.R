@@ -12,15 +12,14 @@
 #' @param ... Additional parameters passed to \code{\link[mgcv]{gam}}.
 #'
 #' @return \code{mte_tilde_at} returns a list of two elements:
-#'   \item{df}{A data frame containing five columns:\itemize{
-#'     \item{\code{p}}{ input values of \code{p}.}
-#'     \item{\code{u}}{ input values of \code{u}.}
-#'     \item{\code{p_comp}}{ the p-component of the estimated \eqn{\widetilde{\textup{MTE}}(p, u)}}
-#'     \item{\code{u_comp}}{ the u-component of the estimated \eqn{\widetilde{\textup{MTE}}(p, u)}}
-#'     \item{\code{value}}{ estimated values of \eqn{\widetilde{\textup{MTE}}(p, u)}}
-#'     }
-#'   }
-#'   \item{proj}{Fitted \code{\link[mgcv]{gam}} model for \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}}
+#'   \item{df}{A data frame containing five columns: \describe{
+#'     \item{\code{p}}{input values of \code{p}.}
+#'     \item{\code{u}}{input values of \code{u}.}
+#'     \item{\code{p_comp}}{the p-component of the estimated \eqn{\widetilde{\textup{MTE}}(p, u)}.}
+#'     \item{\code{u_comp}}{the u-component of the estimated \eqn{\widetilde{\textup{MTE}}(p, u)}.}
+#'     \item{\code{value}}{estimated values of \eqn{\widetilde{\textup{MTE}}(p, u)}.}
+#'   }}
+#'   \item{proj}{Fitted \code{\link[mgcv]{gam}} model for \eqn{E[\mu_1(X)-\mu_0(X)|P(Z)=p]}.}
 #'
 #' @export
 #'
